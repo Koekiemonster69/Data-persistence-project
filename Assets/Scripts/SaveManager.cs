@@ -13,20 +13,7 @@ public class SaveManager : MonoBehaviour
 
     public string Username;
 
-    public HighScore CurrentHighScore;
-
-    [System.Serializable]
-    public class HighScore
-    {
-        public string Username;
-        public int Score;
-
-        public HighScore(string username, int score)
-        {
-            Username = username;
-            Score = score;
-        }
-    }
+    public List<HighScore> CurrentHighScores;
 
     private void Awake()
     {
@@ -54,17 +41,39 @@ public class SaveManager : MonoBehaviour
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-            CurrentHighScore = JsonUtility.FromJson<HighScore>(json);
+            CurrentHighScores = data.HighScores;
         }
 
     }
 
     public void SaveHighscore(int score)
     {
-        CurrentHighScore = new HighScore(Username, score);
+        // Try to add the new Highscore to the list
+        CurrentHighScores.Add(new HighScore(Username, score));
+        CurrentHighScores.Sort();
 
-        string json = JsonUtility.ToJson(CurrentHighScore);
+        string json = JsonUtility.ToJson(CurrentHighScores);
         File.WriteAllText(Application.persistentDataPath + "/savefile.js", json);
+    }
+
+    [System.Serializable]
+    public class HighScore
+    {
+        public string Username;
+        public int Score;
+
+        public HighScore(string username, int score)
+        {
+            Username = username;
+            Score = score;
+        }
+    }
+
+    [System.Serializable]
+    public class SaveData
+    {
+        public List<HighScore> HighScores;
     }
 }
