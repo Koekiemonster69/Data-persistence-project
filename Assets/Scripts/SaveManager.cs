@@ -18,12 +18,20 @@ public class SaveManager : MonoBehaviour
     [System.Serializable]
     public class HighScore
     {
-        public string username;
-        public int score;
+        public string Username;
+        public int Score;
+
+        public HighScore(string username, int score)
+        {
+            Username = username;
+            Score = score;
+        }
     }
 
     private void Awake()
     {
+        LoadHighscore();
+
         if (Instance != null)
         {
             Destroy(gameObject);
@@ -34,7 +42,7 @@ public class SaveManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void UsernameFilled()
+    public void StartPressed()
     {
         Username = inputField.text;
         SceneManager.LoadScene(1);
@@ -42,13 +50,21 @@ public class SaveManager : MonoBehaviour
 
     public void LoadHighscore()
     {
+        string path = Application.persistentDataPath + "/savefile.js";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+
+            CurrentHighScore = JsonUtility.FromJson<HighScore>(json);
+        }
 
     }
 
-    public void SaveHighscore()
+    public void SaveHighscore(int score)
     {
-        string json = JsonUtility.ToJson(CurrentHighScore);
+        CurrentHighScore = new HighScore(Username, score);
 
-        File.WriteAllText();
+        string json = JsonUtility.ToJson(CurrentHighScore);
+        File.WriteAllText(Application.persistentDataPath + "/savefile.js", json);
     }
 }

@@ -37,8 +37,20 @@ public class MainManager : MonoBehaviour
             }
         }
         
-        if (SaveManager.Instance != null)
-            HighScoreText.text = "Now Playing: " +  SaveManager.Instance.Username;
+        if (SaveManager.Instance != null && SaveManager.Instance.CurrentHighScore != null)
+        {
+            SetScore();
+        }
+        else
+        {
+            HighScoreText.text = "Best Score : Nobody : 0";
+        }
+    }
+
+    private void SetScore()
+    {
+        HighScoreText.text = "Best Score : " + SaveManager.Instance.CurrentHighScore.Username +
+                        " : " + SaveManager.Instance.CurrentHighScore.Score;
     }
 
     private void Update()
@@ -73,6 +85,12 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (SaveManager.Instance != null && m_Points > SaveManager.Instance.CurrentHighScore.Score)
+        {
+            SaveManager.Instance.SaveHighscore(m_Points);
+            SetScore();
+        }
+
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
