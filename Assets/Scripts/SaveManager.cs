@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -44,7 +45,9 @@ public class SaveManager : MonoBehaviour
             SaveData data = JsonUtility.FromJson<SaveData>(json);
 
             CurrentHighScores = data.HighScores;
+            Debug.Log("Highscores found: " + CurrentHighScores.Count);
         }
+        
 
     }
 
@@ -54,12 +57,15 @@ public class SaveManager : MonoBehaviour
         CurrentHighScores.Add(new HighScore(Username, score));
         CurrentHighScores.Sort();
 
-        string json = JsonUtility.ToJson(CurrentHighScores);
+        SaveData data = new SaveData();
+        data.HighScores = CurrentHighScores;
+
+        string json = JsonUtility.ToJson(data);
         File.WriteAllText(Application.persistentDataPath + "/savefile.js", json);
     }
 
     [System.Serializable]
-    public class HighScore
+    public class HighScore : IComparable
     {
         public string Username;
         public int Score;
@@ -68,6 +74,11 @@ public class SaveManager : MonoBehaviour
         {
             Username = username;
             Score = score;
+        }
+
+        public int CompareTo(object obj)
+        {
+            return (obj as HighScore).Score - Score;
         }
     }
 

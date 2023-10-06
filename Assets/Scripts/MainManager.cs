@@ -37,7 +37,7 @@ public class MainManager : MonoBehaviour
             }
         }
         
-        if (SaveManager.Instance != null && SaveManager.Instance.CurrentHighScores != null)
+        if (SaveManager.Instance != null && SaveManager.Instance.CurrentHighScores.Count > 0)
         {
             SetScore();
         }
@@ -93,5 +93,10 @@ public class MainManager : MonoBehaviour
 
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    public void GoHighscores()
+    {
+        SceneManager.LoadScene(2);
     }
 }
